@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ajaib Terminal — Hotkey Entry Points</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:          #1A1A1A;
+  --surface:     #242424;
+  --surface-2:   #2E2E2E;
+  --surface-3:   #383838;
+  --border:      #3A3A3A;
+  --border-soft: #2E2E2E;
+  --text:        #F5F5F5;
+  --text-2:      #A8A8A8;
+  --text-3:      #6E6E6E;
+  --up:          #30D158;
+  --down:        #FF453A;
+  --brand:       #3A83F9;
+  --brand-soft:  rgba(58,131,249,.10);
+  --font-ui:     'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-data:   'Geist Mono','JetBrains Mono','Menlo',monospace;
+}
+
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);font-family:var(--font-ui);color:var(--text);font-size:13px}
+
+/* ─── App shell ─── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ════════════════════════════════
+   NAV PANEL
+════════════════════════════════ */
+.nav-panel{
+  width:220px;flex-shrink:0;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin:6px 0 6px 6px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+
+/* Window controls */
+.nav-winctrl{
+  height:36px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 12px 0 14px;gap:8px;
+}
+.nav-dots{display:flex;gap:6px}
+.nd{width:12px;height:12px;border-radius:50%}
+.nd.r{background:#ff5f57}.nd.y{background:#febc2e}.nd.g{background:#28c840}
+.nav-winctrl-sp{flex:1}
+.nav-collapse-btn{
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:4px;cursor:pointer;
+  border:none;background:transparent;transition:color .12s,background .12s;
+}
+.nav-collapse-btn:hover{color:var(--text-2);background:var(--surface-2)}
+
+/* Market switcher */
+.nav-market{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;padding:0 10px;
+}
+.seg-ctrl{
+  display:flex;align-items:center;
+  background:var(--bg);border-radius:8px;
+  padding:3px;gap:2px;
+}
+.mchip{
+  font-family:var(--font-ui);font-size:12px;font-weight:500;
+  padding:3px 8px;border-radius:6px;
+  cursor:pointer;border:none;
+  color:var(--text-3);background:transparent;
+  transition:background .15s,color .15s,box-shadow .15s;
+  white-space:nowrap;
+}
+.mchip:hover{color:var(--text-2)}
+.mchip.active{
+  background:var(--surface-2);color:var(--text);
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+.nav-mkt-divider{height:1px;background:var(--border-soft);margin:0 10px;flex-shrink:0}
+
+/* Layout list */
+.nav-layouts{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
+.nav-layouts::-webkit-scrollbar{width:4px}
+.nav-layouts::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:2px}
+
+.nav-eyebrow{display:flex;align-items:center;padding:12px 12px 4px}
+.nav-eyebrow-lbl{
+  font-size:10px;font-weight:500;color:var(--text-3);
+  letter-spacing:.08em;text-transform:uppercase;flex:1;
+}
+.nav-eyebrow-btn{
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:4px;cursor:pointer;
+  font-size:17px;font-weight:300;line-height:1;
+  border:none;background:transparent;transition:color .12s,background .12s;
+}
+.nav-eyebrow-btn:hover{color:var(--text);background:var(--surface-2)}
+
+.nav-row{
+  position:relative;height:30px;
+  display:flex;align-items:center;
+  padding:0 12px;margin:0 6px;
+  border-radius:6px;cursor:pointer;
+  color:var(--text-2);background:transparent;
+  transition:background .1s,color .1s;
+  gap:6px;user-select:none;
+}
+.nav-row:hover{background:var(--surface-2);color:var(--text)}
+.nav-row.active{background:var(--brand-soft);color:var(--brand)}
+.nav-row.active::before{
+  content:'';position:absolute;
+  left:2px;top:50%;transform:translateY(-50%);
+  width:2px;height:60%;background:var(--brand);border-radius:2px;
+}
+.nav-row-icon{width:16px;height:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.7}
+.nav-row.active .nav-row-icon{opacity:1}
+.nav-row-lbl{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-row-key{
+  font-family:var(--font-data);font-size:10px;
+  color:var(--text-3);flex-shrink:0;
+  opacity:0;transition:opacity .12s;
+}
+.nav-row:hover .nav-row-key{opacity:1}
+.nav-row.active .nav-row-key{opacity:.6;color:var(--brand)}
+
+/* ─── F-key strip ─── */
+.nav-fkey{
+  height:36px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 8px;gap:2px;
+  border-top:1px solid var(--border-soft);
+  overflow-x:auto;overflow-y:hidden;
+  position:relative;
+}
+.nav-fkey::-webkit-scrollbar{height:2px}
+.nav-fkey::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:1px}
+
+.fchip{
+  display:flex;align-items:center;gap:2px;flex-shrink:0;
+  cursor:pointer;color:var(--text-3);
+  padding:4px 6px;border-radius:4px;
+  transition:color .12s,background .12s;
+  position:relative;border:none;background:transparent;
+  font-family:inherit;
+}
+.fchip:hover{color:var(--text-2);background:var(--surface-2)}
+.fchip-k{font-family:var(--font-data);font-size:10px;font-weight:600}
+.fchip-sep{font-size:10px;color:var(--border);margin:0 1px}
+.fchip-l{font-family:var(--font-ui);font-size:10px;white-space:nowrap;max-width:56px;overflow:hidden;text-overflow:ellipsis}
+
+/* F-chip tooltip */
+.fchip-tooltip{
+  position:absolute;
+  bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--surface-3);
+  border:1px solid var(--border);border-radius:8px;
+  padding:8px 10px;white-space:nowrap;
+  pointer-events:none;opacity:0;
+  transition:opacity .12s;z-index:300;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  text-align:left;min-width:140px;
+}
+.fchip:hover .fchip-tooltip{opacity:1}
+.ft-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.ft-code{font-family:var(--font-data);font-size:10px;color:var(--text-3);margin-bottom:6px}
+.ft-hint{
+  font-size:10px;color:var(--brand);
+  display:flex;align-items:center;gap:4px;
+  padding-top:5px;border-top:1px solid var(--border-soft);
+}
+
+/* ─── Footer ─── */
+.nav-footer{
+  height:48px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 10px;gap:8px;
+  border-top:1px solid var(--border-soft);
+}
+.nav-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#f79d32,#e05c1a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+  flex-shrink:0;cursor:pointer;
+}
+.nav-user{flex:1;min-width:0}
+.nav-user-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-user-email{font-size:10px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-settings-btn{
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:5px;cursor:pointer;
+  border:none;background:transparent;
+  transition:color .12s,background .12s;
+}
+.nav-settings-btn:hover{color:var(--text-2);background:var(--surface-2)}
+
+/* ─── Profile popover ─── */
+.profile-pop{
+  position:absolute;
+  bottom:calc(100% + 6px);left:6px;right:6px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 12px 36px rgba(0,0,0,.6);
+  overflow:hidden;
+  z-index:400;
+  opacity:0;pointer-events:none;
+  transform:translateY(6px);
+  transition:opacity .14s ease,transform .14s ease;
+}
+.profile-pop.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.pp-user{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 14px 12px;
+  border-bottom:1px solid var(--border-soft);
+}
+.pp-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#f79d32,#e05c1a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.pp-name{font-size:13px;font-weight:600;color:var(--text)}
+.pp-email{font-size:11px;color:var(--text-3);margin-top:1px}
+.pp-menu{padding:4px 0}
+.pp-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;cursor:pointer;
+  transition:background .08s;gap:10px;
+}
+.pp-item:hover{background:var(--surface-3)}
+.pp-item-left{display:flex;align-items:center;gap:10px}
+.pp-item-icon{
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);flex-shrink:0;
+}
+.pp-item-label{font-size:13px;color:var(--text-2)}
+.pp-item:hover .pp-item-label{color:var(--text)}
+.pp-item.active-entry .pp-item-label{color:var(--brand);font-weight:500}
+.pp-item.active-entry .pp-item-icon{color:var(--brand)}
+.pp-item-right{display:flex;align-items:center;gap:6px}
+.pp-item-meta{font-size:12px;color:var(--text-3)}
+.pp-chevron{color:var(--text-3);font-size:12px}
+.pp-divider{height:1px;background:var(--border-soft);margin:4px 0}
+.pp-logout{
+  width:calc(100% - 20px);margin:4px 10px 10px;
+  padding:8px;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:7px;
+  font-family:var(--font-ui);font-size:13px;font-weight:500;
+  color:var(--text-2);cursor:pointer;
+  transition:background .1s,color .1s,border-color .1s;
+}
+.pp-logout:hover{background:rgba(255,69,58,.1);color:var(--down);border-color:rgba(255,69,58,.3)}
+
+/* ════════════════════════════════
+   MAIN AREA
+════════════════════════════════ */
+.main{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;min-width:0;
+  margin:6px 6px 6px 6px;
+}
+
+.content-toolbar{
+  height:44px;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:0 12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px 12px 0 0;
+}
+.ct-market{
+  font-size:11px;font-weight:600;color:var(--text-2);
+  background:var(--surface-2);padding:2px 8px;border-radius:4px;
+}
+.ct-sep{font-size:12px;color:var(--text-3)}
+.ct-layout{font-size:12px;font-weight:500;color:var(--text-2)}
+.ct-sp{flex:1}
+.ct-search{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:5px;padding:4px 8px;
+  cursor:text;width:200px;
+  transition:border-color .15s;
+}
+.ct-search:hover{border-color:var(--text-3)}
+.ct-search svg{color:var(--text-3);flex-shrink:0}
+.ct-search-ph{font-size:12px;color:var(--text-3);flex:1;pointer-events:none;user-select:none}
+.ct-hint{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.kbd{
+  font-family:var(--font-data);font-size:10px;color:var(--text-3);
+  background:var(--surface-3);border:1px solid var(--border);
+  border-radius:3px;padding:1px 4px;line-height:1.4;
+}
+.ct-trade{
+  font-size:11px;font-weight:600;
+  background:var(--brand);color:#fff;
+  padding:4px 12px;border-radius:5px;
+  cursor:pointer;border:none;
+  transition:opacity .12s;
+}
+.ct-trade:hover{opacity:.85}
+
+.content-area{
+  flex:1;overflow:hidden;
+  background:var(--bg);border:1px solid var(--border);
+  border-top:none;border-radius:0 0 12px 12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;position:relative;
+}
+.content-label{
+  font-size:22px;font-weight:600;color:var(--text-3);
+  font-family:var(--font-ui);letter-spacing:-0.02em;margin-bottom:32px;
+}
+
+/* Annotation cards */
+.annotations{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  padding:0 20px;width:100%;
+}
+.ann{
+  display:flex;align-items:flex-start;gap:9px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:10px 13px;max-width:240px;flex:1;min-width:180px;
+}
+.ann-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ann-dot.blue{background:var(--brand)}
+.ann-dot.amber{background:#F59E0B}
+.ann-dot.green{background:var(--up)}
+.ann-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px}
+.ann-text{font-size:10px;color:var(--text-3);line-height:1.55}
+
+/* ════════════════════════════════
+   SHARED MODAL BACKDROP
+════════════════════════════════ */
+.modal-backdrop{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 140ms ease;
+}
+.modal-backdrop.visible{opacity:1;pointer-events:all}
+
+.modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);
+  transform:scale(.95) translateY(6px);
+  transition:transform 140ms ease;
+}
+.modal-backdrop.visible .modal{transform:scale(1) translateY(0)}
+
+/* ════════════════════════════════
+   KEY BADGE (shared)
+════════════════════════════════ */
+.key-badge{
+  font-family:var(--font-data);font-size:11px;font-weight:600;
+  color:var(--text-2);
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:4px;padding:2px 6px;line-height:1.4;
+  display:inline-block;
+}
+.key-badge.empty{
+  font-family:var(--font-ui);font-size:11px;font-weight:400;
+  color:var(--text-3);background:transparent;border-color:var(--border-soft);
+}
+
+/* ════════════════════════════════
+   QUICK-EDIT MODAL  (z 520)
+════════════════════════════════ */
+#quickEditBackdrop{z-index:520}
+.quick-edit-modal{width:360px}
+
+.qe-header{
+  padding:16px 16px 12px;
+  border-bottom:1px solid var(--border-soft);
+}
+.qe-title{font-size:13px;font-weight:600;color:var(--text)}
+.qe-action-name{font-size:11px;color:var(--text-3);margin-top:2px;font-family:var(--font-data)}
+.qe-body{padding:16px}
+.qe-lbl{
+  font-size:10px;font-weight:500;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;
+}
+.qe-current-row{display:flex;gap:4px;flex-wrap:wrap;min-height:24px;align-items:center;margin-bottom:16px}
+
+/* Capture zone */
+.qe-capture-zone{
+  height:56px;
+  border:1.5px dashed var(--border);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:border-color .15s,background .15s;
+  position:relative;overflow:hidden;
+  gap:4px;
+}
+.qe-capture-zone:hover{border-color:var(--text-3);background:rgba(255,255,255,.02)}
+.qe-capture-zone.capturing{
+  border-style:solid;border-color:var(--brand);
+  background:rgba(58,131,249,.05);
+  cursor:default;
+}
+.qe-capture-zone.captured{
+  border-style:solid;border-color:var(--border);
+  background:var(--surface-2);cursor:pointer;
+}
+.qe-hint{font-size:11px;color:var(--text-3);pointer-events:none}
+.qe-capture-zone.capturing .qe-hint{color:var(--brand)}
+.qe-capture-zone.captured .qe-hint{display:none}
+.qe-captured{display:none;align-items:center;gap:4px}
+.qe-capture-zone.captured .qe-captured{display:flex}
+
+/* Capture zone blink cursor */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.capture-cursor{
+  width:2px;height:20px;background:var(--brand);border-radius:1px;
+  animation:blink .8s ease infinite;display:none;
+}
+.qe-capture-zone.capturing .capture-cursor{display:block}
+
+/* Conflict */
+.qe-conflict{
+  display:none;margin-top:8px;
+  padding:8px 10px;
+  background:rgba(255,69,58,.07);
+  border:1px solid rgba(255,69,58,.22);
+  border-radius:6px;
+  font-size:11px;color:var(--down);line-height:1.5;
+  align-items:flex-start;gap:6px;
+}
+.qe-conflict.visible{display:flex}
+
+.qe-footer{
+  padding:12px 16px;
+  border-top:1px solid var(--border-soft);
+  display:flex;align-items:center;gap:8px;
+}
+.qe-clear{
+  font-size:11px;color:var(--text-3);cursor:pointer;
+  background:transparent;border:none;padding:0;
+  transition:color .12s;font-family:inherit;
+}
+.qe-clear:hover{color:var(--down)}
+.sp{flex:1}
+
+/* Buttons */
+.btn-sec{
+  font-size:11px;font-weight:500;color:var(--text-2);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:5px;padding:5px 12px;cursor:pointer;
+  font-family:inherit;transition:background .12s,color .12s;
+}
+.btn-sec:hover{background:var(--surface-3);color:var(--text)}
+.btn-pri{
+  font-size:11px;font-weight:600;color:#fff;
+  background:var(--brand);border:none;
+  border-radius:5px;padding:5px 14px;cursor:pointer;
+  font-family:inherit;transition:opacity .12s;
+}
+.btn-pri:hover{opacity:.85}
+.btn-pri:disabled{opacity:.3;cursor:default}
+
+/* ════════════════════════════════
+   FULL SHORTCUTS MODAL  (z 510)
+════════════════════════════════ */
+#shortcutsBackdrop{z-index:510}
+.shortcuts-modal{
+  width:680px;max-height:580px;
+  display:flex;flex-direction:column;
+}
+
+.sc-header{
+  padding:18px 20px 0;
+  display:flex;align-items:center;gap:8px;
+}
+.sc-title{font-size:15px;font-weight:600;color:var(--text);flex:1}
+.sc-close{
+  width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:4px;cursor:pointer;
+  border:none;background:transparent;font-size:15px;
+  transition:color .12s,background .12s;font-family:inherit;
+}
+.sc-close:hover{color:var(--text-2);background:var(--surface-2)}
+
+.sc-tabs{
+  display:flex;padding:0 20px;margin-top:10px;
+  border-bottom:1px solid var(--border-soft);
+  overflow-x:auto;gap:0;
+}
+.sc-tabs::-webkit-scrollbar{display:none}
+.sc-tab{
+  padding:8px 12px;font-size:11px;font-weight:500;
+  color:var(--text-3);cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  background:transparent;border-top:none;border-left:none;border-right:none;
+  font-family:inherit;transition:color .1s;
+}
+.sc-tab:hover{color:var(--text-2)}
+.sc-tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+
+.sc-body{flex:1;overflow-y:auto;min-height:0}
+.sc-body::-webkit-scrollbar{width:4px}
+.sc-body::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:2px}
+.sc-body:hover::-webkit-scrollbar-thumb{background:var(--border)}
+
+.sc-table{width:100%;border-collapse:collapse}
+.sc-table th{
+  padding:8px 20px;font-size:10px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);
+  background:var(--surface-2);border-bottom:1px solid var(--border-soft);
+  text-align:left;position:sticky;top:0;z-index:1;
+}
+.sc-table th:last-child{text-align:right}
+.sc-table td{
+  padding:9px 20px;border-bottom:1px solid var(--border-soft);
+  vertical-align:middle;
+}
+.sc-table tr:last-child td{border-bottom:none}
+.sc-table tr:hover td{background:var(--surface-2)}
+.sc-action{font-size:12px;color:var(--text)}
+.sc-badges{display:flex;gap:4px;flex-wrap:wrap;align-items:center;min-height:22px}
+.sc-controls{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.sc-edit{
+  font-size:10px;font-weight:500;color:var(--brand);
+  background:var(--brand-soft);
+  border:1px solid rgba(58,131,249,.2);
+  border-radius:4px;padding:3px 9px;
+  cursor:pointer;font-family:inherit;
+  transition:background .12s;
+}
+.sc-edit:hover{background:rgba(58,131,249,.18)}
+.sc-reset{
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);border-radius:3px;cursor:pointer;
+  border:none;background:transparent;font-size:14px;
+  transition:color .12s,background .12s;
+}
+.sc-reset:hover{color:var(--text-2);background:var(--surface-3)}
+.sc-none{font-size:11px;color:var(--text-3)}
+
+/* ── Inline row editing ── */
+.sc-table tr.row-editing>td{background:rgba(58,131,249,.05)}
+.sc-badges-cell{cursor:pointer}
+.sc-table tr:not(.row-editing) .sc-badges-cell:hover .sc-badges{opacity:.85}
+.sc-inline-zone{
+  display:flex;align-items:center;height:28px;
+  border:1.5px dashed var(--border);border-radius:6px;
+  padding:0 8px;gap:6px;
+  transition:border-color .12s,background .12s;
+}
+.sc-inline-zone.capturing{
+  border-style:solid;border-color:var(--brand);
+  background:rgba(58,131,249,.04);
+}
+.sc-inline-zone.captured{
+  border-style:solid;border-color:var(--border);
+  background:var(--surface-2);cursor:pointer;
+}
+.sc-inline-hint{font-size:11px;color:var(--brand)}
+.sc-inline-badges{display:flex;gap:3px;align-items:center}
+.sc-inline-reenter{font-size:10px;color:var(--text-3);margin-left:4px}
+.sc-inline-conflict{display:none}
+.sc-inline-conflict.visible{
+  display:flex;align-items:flex-start;gap:8px;
+  margin-top:5px;padding:8px 10px;
+  background:rgba(255,69,58,.07);
+  border:1px solid rgba(255,69,58,.22);
+  border-radius:6px;
+}
+.sic-icon{flex-shrink:0;margin-top:1px;color:var(--down)}
+.sic-body{display:flex;flex-direction:column;gap:2px}
+.sic-title{font-size:11px;color:var(--down);font-weight:500;line-height:1.4}
+.sic-title b{font-family:var(--font-data)}
+.sic-sub{font-size:10px;color:var(--text-3);line-height:1.45}
+.sc-inline-actions{display:flex;gap:4px;justify-content:flex-end;align-items:center}
+.sc-inline-save,.sc-inline-cancel{
+  height:22px;width:26px;border-radius:4px;font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.sc-inline-save{background:var(--brand);color:#fff;border:none}
+.sc-inline-save:disabled{background:var(--surface-3);color:var(--text-3);cursor:default}
+.sc-inline-save:not(:disabled):hover{background:#5195FF}
+.sc-inline-cancel{background:var(--surface-2);border:1px solid var(--border);color:var(--text-3)}
+.sc-inline-cancel:hover{background:var(--surface-3);color:var(--text-2)}
+
+.sc-footer{
+  padding:12px 20px;border-top:1px solid var(--border-soft);
+  display:flex;align-items:center;gap:8px;
+}
+.sc-reset-all{
+  font-size:11px;color:var(--text-3);
+  background:transparent;border:none;
+  cursor:pointer;font-family:inherit;transition:color .12s;padding:0;
+}
+.sc-reset-all:hover{color:var(--down)}
+
+/* ════════════════════════════════
+   ⌘K COMMAND PALETTE  (z 530)
+════════════════════════════════ */
+#paletteBackdrop{
+  z-index:530;
+  align-items:flex-start;padding-top:72px;
+}
+.cmdpalette{
+  width:520px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 28px 72px rgba(0,0,0,.75);
+  overflow:hidden;
+  transform:scale(.96) translateY(-10px);
+  transition:transform 140ms ease;
+}
+#paletteBackdrop.visible .cmdpalette{transform:scale(1) translateY(0)}
+
+.pal-search{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border-soft);
+}
+.pal-search svg{color:var(--text-3);flex-shrink:0}
+.pal-input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--font-ui);font-size:14px;color:var(--text);
+}
+.pal-input::placeholder{color:var(--text-3)}
+.pal-esc{
+  font-family:var(--font-data);font-size:10px;color:var(--text-3);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:3px;padding:2px 6px;flex-shrink:0;
+}
+
+.pal-body{max-height:380px;overflow-y:auto}
+.pal-body::-webkit-scrollbar{width:4px}
+.pal-body::-webkit-scrollbar-thumb{background:var(--border-soft);border-radius:2px}
+
+.pal-section{
+  padding:8px 16px 4px;
+  font-size:10px;font-weight:500;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.pal-item{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 16px;cursor:pointer;
+  transition:background .08s;
+}
+.pal-item:hover,.pal-item.sel{background:var(--surface-2)}
+.pal-item-icon{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);border-radius:6px;
+  font-size:14px;
+  transition:background .08s;
+}
+.pal-item.sel .pal-item-icon{background:var(--brand-soft)}
+.pal-item-body{flex:1;min-width:0}
+.pal-item-label{font-size:13px;color:var(--text-2)}
+.pal-item.sel .pal-item-label{color:var(--text)}
+.pal-item-sub{font-size:10px;color:var(--text-3);margin-top:1px}
+.pal-item-keys{display:flex;gap:3px;flex-shrink:0}
+.pal-sep{height:1px;background:var(--border-soft);margin:4px 0}
+
+.pal-footer{
+  padding:8px 16px;border-top:1px solid var(--border-soft);
+  display:flex;align-items:center;gap:14px;
+}
+.pal-hint{display:flex;align-items:center;gap:4px}
+.pal-hint-key{
+  font-family:var(--font-data);font-size:10px;color:var(--text-3);
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:3px;padding:1px 5px;
+}
+.pal-hint-lbl{font-size:10px;color:var(--text-3)}
+
+/* ─── Saved toast ─── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;
+  font-size:12px;color:var(--text);
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  z-index:600;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .2s,transform .2s;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--up)}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ════ NAV PANEL ════ -->
+  <nav class="nav-panel">
+
+    <!-- Window controls -->
+    <div class="nav-winctrl">
+      <div class="nav-dots">
+        <div class="nd r"></div><div class="nd y"></div><div class="nd g"></div>
+      </div>
+      <div class="nav-winctrl-sp"></div>
+      <button class="nav-collapse-btn" title="Tutup panel (⌘\)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="1" y="1" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="5" y1="1" x2="5" y2="13" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Market switcher -->
+    <div class="nav-market">
+      <div class="seg-ctrl">
+        <button class="mchip active" onclick="switchMarket(this)">Saham ID</button>
+        <button class="mchip" onclick="switchMarket(this)">Kripto</button>
+        <button class="mchip" onclick="switchMarket(this)">Saham AS</button>
+      </div>
+    </div>
+    <div class="nav-mkt-divider"></div>
+
+    <!-- Layouts -->
+    <div class="nav-layouts">
+      <div class="nav-eyebrow">
+        <span class="nav-eyebrow-lbl">Bawaan</span>
+      </div>
+      <div class="nav-row">
+        <div class="nav-row-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3V3z" stroke="currentColor" stroke-width="1.3"/><path d="M3 6h10" stroke="currentColor" stroke-width="1.3"/><path d="M7 6v7" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <div class="nav-row-lbl">Watchlist</div>
+        <span class="nav-row-key">⌘W</span>
+      </div>
+      <div class="nav-row active">
+        <div class="nav-row-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12l3-4 3 2 3-5 3 3" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="nav-row-lbl">Market</div>
+        <span class="nav-row-key">⌘1</span>
+      </div>
+      <div class="nav-row">
+        <div class="nav-row-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="8" width="3" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="6.5" y="5" width="3" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="2" width="3" height="12" rx="1" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <div class="nav-row-lbl">Portfolio</div>
+        <span class="nav-row-key">⌘P</span>
+      </div>
+      <div class="nav-eyebrow" style="margin-top:4px">
+        <span class="nav-eyebrow-lbl">Custom Layout</span>
+        <button class="nav-eyebrow-btn">+</button>
+      </div>
+      <div class="nav-row">
+        <div class="nav-row-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="nav-row-lbl">Bandar Hunt</div>
+        <span class="nav-row-key">⌘2</span>
+      </div>
+      <div class="nav-row">
+        <div class="nav-row-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6z" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l3 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="nav-row-lbl">Foreign Flow Watch</div>
+        <span class="nav-row-key">⌘3</span>
+      </div>
+    </div>
+
+    <!-- F-key strip — ENTRY POINT 1 -->
+    <div class="nav-fkey" id="fkeyStrip"></div>
+
+    <!-- Profile footer — ENTRY POINT 2 via avatar popover -->
+    <div class="nav-footer" style="position:relative">
+
+      <!-- Profile popover -->
+      <div class="profile-pop" id="profilePop">
+        <div class="pp-user">
+          <div class="pp-avatar">V</div>
+          <div>
+            <div class="pp-name">Tiavita Herdiana</div>
+            <div class="pp-email">tiavita.h@gmail.com</div>
+          </div>
+        </div>
+        <div class="pp-menu">
+          <div class="pp-item">
+            <div class="pp-item-left">
+              <div class="pp-item-icon">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="pp-item-label">Legal</span>
+            </div>
+            <div class="pp-item-right"><span class="pp-chevron">›</span></div>
+          </div>
+          <div class="pp-item">
+            <div class="pp-item-left">
+              <div class="pp-item-icon">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="pp-item-label">Pengaturan</span>
+            </div>
+            <div class="pp-item-right"><span class="pp-chevron">›</span></div>
+          </div>
+          <div class="pp-item active-entry" id="ppHotkeysBtn">
+            <div class="pp-item-left">
+              <div class="pp-item-icon">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 10h2M7 10h2M10 10h2M4 7.5h1M6.5 7.5h1M9 7.5h1M11.5 7.5h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="pp-item-label">Hotkeys</span>
+            </div>
+            <div class="pp-item-right">
+              <span class="pp-item-meta" style="font-family:var(--font-data);font-size:10px;color:var(--brand)">⌘,</span>
+              <span class="pp-chevron" style="color:var(--brand)">›</span>
+            </div>
+          </div>
+          <div class="pp-divider"></div>
+          <div class="pp-item">
+            <div class="pp-item-left">
+              <div class="pp-item-icon">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v4M8 10.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span class="pp-item-label">Versi</span>
+            </div>
+            <div class="pp-item-right"><span class="pp-item-meta">1.4.2</span></div>
+          </div>
+        </div>
+        <button class="pp-logout">Logout</button>
+      </div>
+
+      <div class="nav-avatar" id="profileAvatarBtn" style="cursor:pointer">V</div>
+      <div class="nav-user">
+        <div class="nav-user-name">Vita H.</div>
+        <div class="nav-user-email">tiavita@ajaib.co.id</div>
+      </div>
+      <button class="nav-settings-btn" id="settingsBtn" title="Keyboard Shortcuts (⌘,)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ════ MAIN AREA ════ -->
+  <div class="main">
+    <!-- Content toolbar — ENTRY POINT 3 via search box -->
+    <div class="content-toolbar">
+      <div class="ct-market">Saham ID</div>
+      <span class="ct-sep">›</span>
+      <span class="ct-layout">Market</span>
+      <div class="ct-sp"></div>
+      <div class="ct-search" id="searchBox">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="ct-search-ph">Cari saham, aksi…</span>
+        <div class="ct-hint"><span class="kbd">⌘</span><span class="kbd">K</span></div>
+      </div>
+      <button class="ct-trade" style="display:flex;align-items:center;gap:6px">
+        Trade
+        <span style="font-family:var(--font-data);font-size:10px;opacity:.7">F1</span>
+      </button>
+    </div>
+
+    <!-- Content area -->
+    <div class="content-area">
+      <div class="content-label">IDX · Market</div>
+
+      <div class="annotations">
+        <div class="ann">
+          <div class="ann-dot blue"></div>
+          <div>
+            <div class="ann-title">Entry 1 — F-key strip</div>
+            <div class="ann-text">Klik chip F1–F8 di nav panel (di atas footer) untuk edit langsung satu shortcut.</div>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-dot amber"></div>
+          <div>
+            <div class="ann-title">Entry 2 — ⚙ Settings</div>
+            <div class="ann-text">Klik ikon ⚙ di footer panel untuk buka panel lengkap semua keyboard shortcuts.</div>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-dot green"></div>
+          <div>
+            <div class="ann-title">Entry 3 — ⌘K Palette</div>
+            <div class="ann-text">Klik search bar atau tekan ⌘K. Shortcut tampil di samping setiap aksi.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  MODAL 1: Quick-edit  (z-index 520)
+════════════════════════════════════════ -->
+<div class="modal-backdrop" id="quickEditBackdrop">
+  <div class="modal quick-edit-modal">
+    <div class="qe-header">
+      <div class="qe-title">Edit Shortcut</div>
+      <div class="qe-action-name" id="qeActionName">Order Booking [0815]</div>
+    </div>
+    <div class="qe-body">
+      <div class="qe-lbl">Binding saat ini</div>
+      <div class="qe-current-row" id="qeCurrentRow"></div>
+
+      <div class="qe-lbl">Binding baru</div>
+      <div class="qe-capture-zone" id="qeCaptureZone">
+        <span class="qe-hint" id="qeHint">Klik di sini, lalu tekan kombinasi tombol</span>
+        <div class="qe-captured" id="qeCaptured"></div>
+        <div class="capture-cursor"></div>
+      </div>
+      <div class="qe-conflict" id="qeConflict"></div>
+    </div>
+    <div class="qe-footer">
+      <button class="qe-clear" id="qeClearBtn">Hapus binding</button>
+      <div class="sp"></div>
+      <button class="btn-sec" id="qeCancelBtn">Batal</button>
+      <button class="btn-pri" id="qeSaveBtn" disabled>Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  MODAL 2: Full Keyboard Shortcuts  (z-index 510)
+════════════════════════════════════════ -->
+<div class="modal-backdrop" id="shortcutsBackdrop">
+  <div class="modal shortcuts-modal">
+    <div class="sc-header">
+      <span class="sc-title">Keyboard Shortcuts</span>
+      <button class="sc-close" id="scClose">✕</button>
+    </div>
+    <div class="sc-tabs" id="scTabs">
+      <button class="sc-tab active" data-cat="trading">Trading</button>
+      <button class="sc-tab" data-cat="market">Market &amp; Analisis</button>
+      <button class="sc-tab" data-cat="navigation">Navigasi</button>
+      <button class="sc-tab" data-cat="workspace">Workspace</button>
+      <button class="sc-tab" data-cat="app">App</button>
+    </div>
+    <div class="sc-body">
+      <table class="sc-table">
+        <thead>
+          <tr>
+            <th style="width:45%">Aksi</th>
+            <th style="width:35%">Shortcut</th>
+            <th style="width:20%"></th>
+          </tr>
+        </thead>
+        <tbody id="scTableBody"></tbody>
+      </table>
+    </div>
+    <div class="sc-footer">
+      <button class="sc-reset-all">Reset semua ke default</button>
+      <div class="sp"></div>
+      <button class="btn-sec" id="scCancelBtn">Batal</button>
+      <button class="btn-pri" id="scSaveBtn">Simpan semua</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  MODAL 3: ⌘K Palette  (z-index 530)
+════════════════════════════════════════ -->
+<div class="modal-backdrop" id="paletteBackdrop" style="z-index:530;align-items:flex-start;padding-top:72px">
+  <div class="modal cmdpalette" style="transform:scale(.96) translateY(-10px)">
+    <div class="pal-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input class="pal-input" id="palInput" placeholder="Cari aksi, saham…" autocomplete="off" spellcheck="false">
+      <span class="pal-esc">esc</span>
+    </div>
+    <div class="pal-body" id="palBody"></div>
+    <div class="pal-footer">
+      <div class="pal-hint"><span class="pal-hint-key">↑↓</span><span class="pal-hint-lbl">navigasi</span></div>
+      <div class="pal-hint"><span class="pal-hint-key">↵</span><span class="pal-hint-lbl">pilih</span></div>
+      <div class="pal-hint"><span class="pal-hint-key">esc</span><span class="pal-hint-lbl">tutup</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg">Shortcut disimpan</span>
+</div>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════
+   DATA
+════════════════════════════════ */
+
+const FKEYS = [
+  { key:'F1', label:'Order Booking', code:'0815', actionId:'buy' },
+  { key:'F2', label:'Watchlist',     code:'0110', actionId:'sell' },
+  { key:'F3', label:'Running Trade', code:'0220', actionId:'modify' },
+  { key:'F4', label:'Order Book',    code:'0301', actionId:'cancel' },
+  { key:'F5', label:'Portfolio',     code:'1100', actionId:'market-pic' },
+  { key:'F6', label:'Broker Summary',code:'0520', actionId:'best-five' },
+  { key:'F7', label:'Foreign Flow',  code:'0530', actionId:'news' },
+  { key:'F8', label:'Screener',      code:'0710', actionId:'trade-book' },
+];
+
+const CATEGORIES = {
+  trading: {
+    label: 'Trading',
+    actions: [
+      { id:'buy',         label:'Beli (Buy Order)',          defaults:['F1','⌘B'] },
+      { id:'sell',        label:'Jual (Sell Order)',         defaults:['F2','⌘S'] },
+      { id:'modify',      label:'Modifikasi Order',          defaults:['F3'] },
+      { id:'cancel',      label:'Batalkan Order',            defaults:['F4'] },
+      { id:'cancel-all',  label:'Batalkan Semua Pending',    defaults:['⇧F3'] },
+      { id:'modify-pend', label:'Modifikasi Order Pending',  defaults:['⇧F2'] },
+      { id:'fast-order',  label:'Fast Order Entry',          defaults:['F11'] },
+    ]
+  },
+  market: {
+    label: 'Market & Analisis',
+    actions: [
+      { id:'search',     label:'Cari / Command Palette',    defaults:['⌘K'] },
+      { id:'mkt-watch',  label:'Market Watch',              defaults:['⌘M'] },
+      { id:'market-pic', label:'Market Picture',            defaults:['F5'] },
+      { id:'best-five',  label:'Best Five (Order Depth)',   defaults:['F6'] },
+      { id:'snapshot',   label:'Market Snapshot',           defaults:['F9'] },
+      { id:'sec-info',   label:'Info Sekuritas',            defaults:['⇧F7'] },
+      { id:'news',       label:'News Feed',                 defaults:['⌘N'] },
+    ]
+  },
+  navigation: {
+    label: 'Navigasi',
+    actions: [
+      { id:'order-book', label:'Order Book',    defaults:['⌘O'] },
+      { id:'trade-book', label:'Trade Book',    defaults:['F8'] },
+      { id:'portfolio',  label:'Portfolio',     defaults:['⌘P'] },
+      { id:'order-hist', label:'Riwayat Order', defaults:['⌘H'] },
+      { id:'watchlist',  label:'Watchlist',     defaults:['⌘W'] },
+      { id:'chart',      label:'Chart',         defaults:['⌘G'] },
+      { id:'screener',   label:'Screener',      defaults:[] },
+    ]
+  },
+  workspace: {
+    label: 'Workspace',
+    actions: [
+      { id:'ws1',        label:'Workspace 1',        defaults:['⌘1'] },
+      { id:'ws2',        label:'Workspace 2',        defaults:['⌘2'] },
+      { id:'ws3',        label:'Workspace 3',        defaults:['⌘3'] },
+      { id:'ws4',        label:'Workspace 4',        defaults:['⌘4'] },
+      { id:'ws-new',     label:'Workspace Baru',     defaults:['⌘⇧N'] },
+      { id:'ws-save',    label:'Simpan Workspace',   defaults:['⌘⇧S'] },
+      { id:'panel-tog',  label:'Toggle Nav Panel',   defaults:['⌘\\'] },
+    ]
+  },
+  app: {
+    label: 'App',
+    actions: [
+      { id:'settings',   label:'Pengaturan',      defaults:['⌘,'] },
+      { id:'msg-log',    label:'Message Log',     defaults:['F10'] },
+      { id:'chg-pwd',    label:'Ganti Password',  defaults:['⌘⇧P'] },
+      { id:'logout',     label:'Keluar',          defaults:['⌘⇧Q'] },
+      { id:'exit',       label:'Tutup Aplikasi',  defaults:['⌘Q'] },
+    ]
+  }
+};
+
+// Live mutable state (in-memory, no localStorage)
+const state = {};
+Object.values(CATEGORIES).forEach(cat =>
+  cat.actions.forEach(a => { state[a.id] = [...a.defaults]; })
+);
+
+// Build reverse map: keyString → actionId
+function reverseMap() {
+  const m = {};
+  Object.entries(state).forEach(([id, keys]) =>
+    keys.forEach(k => { m[k] = id; })
+  );
+  return m;
+}
+
+// Find action by id across all categories
+function findAction(id) {
+  for (const cat of Object.values(CATEGORIES)) {
+    const a = cat.actions.find(a => a.id === id);
+    if (a) return a;
+  }
+  return null;
+}
+
+/* ════════════════════════════════
+   F-KEY STRIP
+════════════════════════════════ */
+
+function renderFkeyStrip() {
+  const strip = document.getElementById('fkeyStrip');
+  strip.innerHTML = '';
+  FKEYS.forEach(fk => {
+    const keys = state[fk.actionId] || [];
+    const keyStr = keys[0] || fk.key;
+    const btn = document.createElement('button');
+    btn.className = 'fchip';
+    btn.innerHTML = `
+      <span class="fchip-k">${keyStr}</span>
+      <span class="fchip-sep">·</span>
+      <span class="fchip-l">${fk.label}</span>
+      <div class="fchip-tooltip">
+        <div class="ft-name">${fk.label}</div>
+        <div class="ft-code">[${fk.code}]</div>
+        <div class="ft-hint">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M2 8h10M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Klik untuk edit shortcut
+        </div>
+      </div>`;
+    btn.addEventListener('click', () => {
+      openQuickEdit(fk.actionId, `${fk.label} [${fk.code}]`);
+    });
+    strip.appendChild(btn);
+  });
+}
+
+/* ════════════════════════════════
+   QUICK-EDIT MODAL
+════════════════════════════════ */
+
+let editId = null;
+let capturing = false;
+let capturedStr = null;
+
+function openQuickEdit(actionId, displayName) {
+  editId = actionId;
+  capturing = false;
+  capturedStr = null;
+
+  document.getElementById('qeActionName').textContent = displayName;
+
+  // Current badges
+  const cur = state[actionId] || [];
+  const curRow = document.getElementById('qeCurrentRow');
+  curRow.innerHTML = cur.length > 0
+    ? cur.map(k => `<span class="key-badge">${k}</span>`).join('')
+    : `<span class="key-badge empty">Tidak ada binding</span>`;
+
+  // Reset capture zone
+  const zone = document.getElementById('qeCaptureZone');
+  zone.className = 'qe-capture-zone';
+  document.getElementById('qeHint').textContent = 'Klik di sini, lalu tekan kombinasi tombol';
+  document.getElementById('qeCaptured').innerHTML = '';
+  document.getElementById('qeConflict').className = 'qe-conflict';
+  document.getElementById('qeSaveBtn').disabled = true;
+
+  document.getElementById('quickEditBackdrop').classList.add('visible');
+}
+
+function closeQuickEdit() {
+  document.getElementById('quickEditBackdrop').classList.remove('visible');
+  capturing = false;
+  capturedStr = null;
+  editId = null;
+}
+
+// Capture zone click
+document.getElementById('qeCaptureZone').addEventListener('click', () => {
+  if (capturing) return;
+  capturing = true;
+  capturedStr = null;
+  const zone = document.getElementById('qeCaptureZone');
+  zone.className = 'qe-capture-zone capturing';
+  document.getElementById('qeHint').textContent = 'Tekan kombinasi tombol sekarang…';
+  document.getElementById('qeSaveBtn').disabled = true;
+  document.getElementById('qeConflict').className = 'qe-conflict';
+});
+
+// Canonical key string from event
+function keyString(e) {
+  const parts = [];
+  if (e.metaKey)  parts.push('⌘');
+  if (e.ctrlKey)  parts.push('Ctrl');
+  if (e.altKey)   parts.push('⌥');
+  if (e.shiftKey) parts.push('⇧');
+  let k = e.key;
+  if (k === ' ')   k = 'Space';
+  else if (k.length === 1) k = k.toUpperCase();
+  parts.push(k);
+  return parts.join('');
+}
+
+function badgesHtml(str) {
+  // Split combined string into individual badge tokens
+  // e.g. "⌘B" → ["⌘","B"], "⇧F3" → ["⇧","F3"]
+  const tokens = str.match(/(Ctrl|⌘|⌥|⇧|Space|F\d+|[A-Z0-9,.\\/\[\]'`\-=])/g) || [str];
+  return tokens.map(t => `<span class="key-badge">${t}</span>`).join('');
+}
+
+// All keydown, centralised
+document.addEventListener('keydown', (e) => {
+
+  // ── Inline row capture (shortcuts table) ──
+  if (inlineEditId !== null) {
+    const mods = ['Meta','Control','Alt','Shift'];
+    if (mods.includes(e.key)) return;
+
+    if (e.key === 'Escape') {
+      cancelInlineEdit();
+      e.stopImmediatePropagation();
+      return;
+    }
+    if (e.key === 'Enter' && inlineCaptured) {
+      e.preventDefault();
+      commitInlineEdit();
+      return;
+    }
+    if (e.key === 'Tab') return;
+
+    e.preventDefault();
+    inlineCaptured = keyString(e);
+
+    // Update capture zone to "captured" state
+    const zone = document.getElementById('sc-inline-zone');
+    if (zone) {
+      zone.className = 'sc-inline-zone captured';
+      zone.innerHTML = `
+        <div class="sc-inline-badges">${badgesHtml(inlineCaptured)}</div>
+        <span class="sc-inline-reenter">klik untuk ubah</span>`;
+      zone.onclick = () => {
+        // Let user re-enter a different key
+        zone.className = 'sc-inline-zone capturing';
+        zone.innerHTML = `<span class="sc-inline-hint">Tekan kombinasi tombol…</span><div class="capture-cursor"></div>`;
+        zone.onclick = null;
+        inlineCaptured = null;
+        const sv = document.getElementById('sc-inline-save');
+        if (sv) sv.disabled = true;
+        const cf = document.getElementById('sc-inline-conflict');
+        if (cf) { cf.className = 'sc-inline-conflict'; cf.textContent = ''; }
+      };
+    }
+
+    // Conflict check
+    const rm = reverseMap();
+    const cId = rm[inlineCaptured];
+    const cEl = document.getElementById('sc-inline-conflict');
+    if (cEl) {
+      if (cId && cId !== inlineEditId) {
+        const ca = findAction(cId);
+        const cname = ca ? ca.label : cId;
+        cEl.className = 'sc-inline-conflict visible';
+        cEl.innerHTML = `
+          <svg class="sic-icon" width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1.5L14.5 13H1.5L8 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            <line x1="8" y1="6" x2="8" y2="9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="8" cy="11.5" r=".7" fill="currentColor"/>
+          </svg>
+          <div class="sic-body">
+            <span class="sic-title"><b>${inlineCaptured}</b> sudah dipakai oleh <b>${cname}</b></span>
+            <span class="sic-sub">Menyimpan akan melepas binding itu dari aksi tersebut.</span>
+          </div>`;
+      } else {
+        cEl.className = 'sc-inline-conflict';
+        cEl.innerHTML = '';
+      }
+    }
+
+    const sv = document.getElementById('sc-inline-save');
+    if (sv) sv.disabled = false;
+    return; // block all other shortcuts while inline editing
+  }
+
+  // ── Capture mode ──
+  if (capturing) {
+    const mods = ['Meta','Control','Alt','Shift'];
+    if (mods.includes(e.key)) return;
+
+    if (e.key === 'Escape') {
+      capturing = false;
+      const zone = document.getElementById('qeCaptureZone');
+      zone.className = capturedStr ? 'qe-capture-zone captured' : 'qe-capture-zone';
+      if (!capturedStr) document.getElementById('qeHint').textContent = 'Klik di sini, lalu tekan kombinasi tombol';
+      e.stopImmediatePropagation();
+      return;
+    }
+
+    e.preventDefault();
+    capturedStr = keyString(e);
+    capturing = false;
+
+    const zone = document.getElementById('qeCaptureZone');
+    zone.className = 'qe-capture-zone captured';
+    document.getElementById('qeCaptured').innerHTML = badgesHtml(capturedStr);
+
+    // Conflict check
+    const rm = reverseMap();
+    const conflictId = rm[capturedStr];
+    const conflictEl = document.getElementById('qeConflict');
+    if (conflictId && conflictId !== editId) {
+      const ca = findAction(conflictId);
+      const cname = ca ? ca.label : conflictId;
+      conflictEl.className = 'qe-conflict visible';
+      conflictEl.innerHTML = `
+        <svg style="vertical-align:middle;margin-right:5px;flex-shrink:0" width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5L14.5 13H1.5L8 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <line x1="8" y1="6" x2="8" y2="9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="8" cy="11.5" r=".7" fill="currentColor"/>
+        </svg>
+        <span style="font-family:var(--font-data);font-weight:600">${capturedStr}</span>
+        sudah dipakai oleh <strong>${cname}</strong>.<br>
+        <span style="color:var(--text-3)">Menyimpan akan melepas binding itu dari aksi tersebut.</span>`;
+    } else {
+      conflictEl.className = 'qe-conflict';
+      conflictEl.innerHTML = '';
+    }
+    document.getElementById('qeSaveBtn').disabled = false;
+    return;
+  }
+
+  // ── Global shortcuts ──
+  if (e.key === 'Escape') {
+    if (document.getElementById('paletteBackdrop').classList.contains('visible'))    { closePalette(); return; }
+    if (document.getElementById('quickEditBackdrop').classList.contains('visible'))  { closeQuickEdit(); return; }
+    if (inlineEditId !== null) { cancelInlineEdit(); return; }
+    if (document.getElementById('shortcutsBackdrop').classList.contains('visible')) { closeShortcuts(); return; }
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault(); openPalette();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+    e.preventDefault();
+    openShortcuts();
+  }
+});
+
+// Save
+document.getElementById('qeSaveBtn').addEventListener('click', () => {
+  if (!editId) return;
+  if (capturedStr) {
+    // Remove captured key from conflicting action
+    const rm = reverseMap();
+    const conflictId = rm[capturedStr];
+    if (conflictId && conflictId !== editId) {
+      state[conflictId] = state[conflictId].filter(k => k !== capturedStr);
+    }
+    // Set new binding (keep secondary bindings, replace primary)
+    const cur = state[editId] || [];
+    state[editId] = [capturedStr, ...cur.slice(1)];
+  }
+  renderFkeyStrip();
+  if (document.getElementById('shortcutsBackdrop').classList.contains('visible')) {
+    renderScTable(currentCat);
+  }
+  showToast('Shortcut disimpan');
+  closeQuickEdit();
+});
+
+// Clear binding
+document.getElementById('qeClearBtn').addEventListener('click', () => {
+  if (!editId) return;
+  state[editId] = [];
+  renderFkeyStrip();
+  if (document.getElementById('shortcutsBackdrop').classList.contains('visible')) {
+    renderScTable(currentCat);
+  }
+  showToast('Binding dihapus');
+  closeQuickEdit();
+});
+
+document.getElementById('qeCancelBtn').addEventListener('click', closeQuickEdit);
+document.getElementById('quickEditBackdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('quickEditBackdrop')) closeQuickEdit();
+});
+
+/* ════════════════════════════════
+   FULL SHORTCUTS MODAL
+════════════════════════════════ */
+
+let currentCat = 'trading';
+
+/* ── Inline edit state ── */
+let inlineEditId   = null;   // actionId being edited inline
+let inlineEditRow  = null;   // <tr> DOM element
+let inlineCaptured = null;   // captured key string
+let pendingInline  = null;   // actionId to start editing after next re-render
+
+function renderScTable(catId) {
+  const cat = CATEGORIES[catId];
+  const tbody = document.getElementById('scTableBody');
+  tbody.innerHTML = '';
+
+  // Reset inline state on every (re-)render
+  inlineEditId  = null;
+  inlineEditRow = null;
+  inlineCaptured = null;
+
+  cat.actions.forEach(action => {
+    const keys = state[action.id] || [];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><div class="sc-action">${action.label}</div></td>
+      <td class="sc-badges-cell" data-action-id="${action.id}">
+        <div class="sc-badges">
+          ${keys.length > 0
+            ? keys.map(k => `<span class="key-badge">${k}</span>`).join('')
+            : `<span class="sc-none">—</span>`}
+        </div>
+      </td>
+      <td class="sc-controls-cell">
+        <div class="sc-controls">
+          <button class="sc-edit" data-id="${action.id}" title="Edit shortcut">Edit</button>
+          <button class="sc-reset" data-id="${action.id}" title="Reset ke default">↺</button>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Clicking the key-badge cell → inline edit
+  tbody.querySelectorAll('.sc-badges-cell').forEach(cell => {
+    cell.addEventListener('click', () =>
+      startInlineEdit(cell.closest('tr'), cell.dataset.actionId)
+    );
+  });
+  // Edit button → inline edit
+  tbody.querySelectorAll('.sc-edit').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      startInlineEdit(btn.closest('tr'), btn.dataset.id);
+    });
+  });
+  // Reset button
+  tbody.querySelectorAll('.sc-reset').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const a = findAction(btn.dataset.id);
+      if (a) { state[a.id] = [...a.defaults]; renderScTable(currentCat); renderFkeyStrip(); }
+    });
+  });
+
+  // If another row was clicked while one was editing, start it now
+  if (pendingInline) {
+    const id = pendingInline;
+    pendingInline = null;
+    const btn = tbody.querySelector(`.sc-edit[data-id="${id}"]`);
+    if (btn) startInlineEdit(btn.closest('tr'), id);
+  }
+}
+
+/* ── Inline edit lifecycle ── */
+
+function startInlineEdit(tr, actionId) {
+  // If a different row is already being edited, cancel it and queue this one
+  if (inlineEditId && inlineEditId !== actionId) {
+    pendingInline = actionId;
+    renderScTable(currentCat);
+    return;
+  }
+  if (inlineEditId === actionId) return; // already editing this row
+
+  inlineEditId  = actionId;
+  inlineEditRow = tr;
+  inlineCaptured = null;
+  tr.classList.add('row-editing');
+
+  // Transform the shortcut cell into a capture zone
+  tr.querySelector('.sc-badges-cell').innerHTML = `
+    <div class="sc-inline-zone capturing" id="sc-inline-zone">
+      <span class="sc-inline-hint">Tekan kombinasi tombol…</span>
+      <div class="capture-cursor"></div>
+    </div>
+    <div class="sc-inline-conflict" id="sc-inline-conflict"></div>`;
+
+  // Transform the controls cell into save / cancel
+  tr.querySelector('.sc-controls-cell').innerHTML = `
+    <div class="sc-inline-actions">
+      <button class="sc-inline-save" id="sc-inline-save" disabled title="Simpan (↵)">✓</button>
+      <button class="sc-inline-cancel" id="sc-inline-cancel" title="Batal (Esc)">✕</button>
+    </div>`;
+
+  document.getElementById('sc-inline-save').addEventListener('click', e => {
+    e.stopPropagation();
+    if (inlineCaptured) commitInlineEdit();
+  });
+  document.getElementById('sc-inline-cancel').addEventListener('click', e => {
+    e.stopPropagation();
+    cancelInlineEdit();
+  });
+}
+
+function commitInlineEdit() {
+  if (!inlineEditId || !inlineCaptured) return;
+  // Remove captured key from any conflicting action
+  const rm = reverseMap();
+  const conflictId = rm[inlineCaptured];
+  if (conflictId && conflictId !== inlineEditId) {
+    state[conflictId] = state[conflictId].filter(k => k !== inlineCaptured);
+  }
+  // Set new primary binding, keep secondary bindings
+  const cur = state[inlineEditId] || [];
+  state[inlineEditId] = [inlineCaptured, ...cur.slice(1)];
+  inlineEditId = null; inlineEditRow = null; inlineCaptured = null;
+  renderFkeyStrip();
+  renderScTable(currentCat);
+  showToast('Shortcut disimpan');
+}
+
+function cancelInlineEdit() {
+  inlineEditId = null; inlineEditRow = null; inlineCaptured = null;
+  renderScTable(currentCat);
+}
+
+function openShortcuts() {
+  currentCat = 'trading';
+  document.querySelectorAll('.sc-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.sc-tab[data-cat="trading"]').classList.add('active');
+  renderScTable(currentCat);
+  document.getElementById('shortcutsBackdrop').classList.add('visible');
+}
+
+function closeShortcuts() {
+  document.getElementById('shortcutsBackdrop').classList.remove('visible');
+}
+
+document.getElementById('settingsBtn').addEventListener('click', openShortcuts);
+document.getElementById('scClose').addEventListener('click', closeShortcuts);
+document.getElementById('scCancelBtn').addEventListener('click', closeShortcuts);
+document.getElementById('scSaveBtn').addEventListener('click', () => {
+  renderFkeyStrip();
+  showToast('Semua perubahan disimpan');
+  closeShortcuts();
+});
+document.getElementById('shortcutsBackdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('shortcutsBackdrop')) closeShortcuts();
+});
+
+document.getElementById('scTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.sc-tab');
+  if (!tab) return;
+  document.querySelectorAll('.sc-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentCat = tab.dataset.cat;
+  renderScTable(currentCat);
+});
+
+/* ════════════════════════════════
+   ⌘K COMMAND PALETTE
+════════════════════════════════ */
+
+const PAL_ACTIONS = [
+  { icon:'📈', label:'Beli Order',           sub:'Trading',   id:'buy' },
+  { icon:'📉', label:'Jual Order',           sub:'Trading',   id:'sell' },
+  { icon:'📋', label:'Order Book',           sub:'Navigasi',  id:'order-book' },
+  { icon:'💼', label:'Portfolio',            sub:'Navigasi',  id:'portfolio' },
+  { icon:'👁', label:'Watchlist',            sub:'Navigasi',  id:'watchlist' },
+  { icon:'📊', label:'Chart',               sub:'Navigasi',  id:'chart' },
+  { icon:'🌊', label:'Foreign Flow',         sub:'Market',    id:'news' },
+  { icon:'📸', label:'Market Snapshot',      sub:'Market',    id:'snapshot' },
+  { icon:'⚙️', label:'Keyboard Shortcuts',   sub:'App',       id:'_settings' },
+  { icon:'🔍', label:'Screener',             sub:'Navigasi',  id:'screener' },
+];
+
+const PAL_STOCKS = [
+  { ticker:'BBCA', name:'Bank Central Asia Tbk',        price:'10.225', chg:'+0.74%' },
+  { ticker:'TLKM', name:'Telekomunikasi Indonesia Tbk', price:'3.900',  chg:'-1.26%' },
+  { ticker:'BBRI', name:'Bank Rakyat Indonesia Tbk',    price:'5.150',  chg:'+0.98%' },
+];
+
+let palSel = 0;
+
+function renderPalette() {
+  const q = document.getElementById('palInput').value.toLowerCase();
+  const actions = PAL_ACTIONS.filter(a =>
+    !q || a.label.toLowerCase().includes(q) || a.sub.toLowerCase().includes(q)
+  );
+  const stocks = PAL_STOCKS.filter(s =>
+    !q || s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)
+  );
+
+  palSel = Math.min(palSel, actions.length - 1);
+  if (palSel < 0) palSel = 0;
+
+  let html = '';
+  if (actions.length > 0) {
+    html += `<div class="pal-section">Aksi</div>`;
+    actions.forEach((a, i) => {
+      const keys = a.id === '_settings' ? [] : (state[a.id] || []);
+      html += `
+        <div class="pal-item ${i === palSel ? 'sel' : ''}" data-idx="${i}" data-id="${a.id}">
+          <div class="pal-item-icon">${a.icon}</div>
+          <div class="pal-item-body">
+            <div class="pal-item-label">${a.label}</div>
+            <div class="pal-item-sub">${a.sub}</div>
+          </div>
+          <div class="pal-item-keys">
+            ${keys.map(k => `<span class="key-badge">${k}</span>`).join('')}
+          </div>
+        </div>`;
+    });
+  }
+
+  if (stocks.length > 0) {
+    html += `<div class="pal-sep"></div><div class="pal-section">Saham</div>`;
+    stocks.forEach(s => {
+      const isUp = s.chg.startsWith('+');
+      html += `
+        <div class="pal-item" data-ticker="${s.ticker}">
+          <div class="pal-item-icon" style="font-family:var(--font-data);font-size:10px;font-weight:700;color:var(--text-2)">${s.ticker}</div>
+          <div class="pal-item-body">
+            <div class="pal-item-label">${s.name}</div>
+            <div class="pal-item-sub">${s.ticker} · IDX Reguler</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:var(--font-data);font-size:12px;color:var(--text)">${s.price}</div>
+            <div style="font-family:var(--font-data);font-size:10px;color:${isUp ? 'var(--up)' : 'var(--down)'}">${s.chg}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  document.getElementById('palBody').innerHTML = html;
+
+  // Wire clicks
+  document.querySelectorAll('#palBody .pal-item[data-idx]').forEach(item => {
+    item.addEventListener('click', () => activatePalItem(parseInt(item.dataset.idx), actions));
+  });
+}
+
+function activatePalItem(idx, actions) {
+  const a = actions[idx];
+  if (!a) return;
+  if (a.id === '_settings') { closePalette(); openShortcuts(); }
+  else closePalette();
+}
+
+function openPalette() {
+  palSel = 0;
+  document.getElementById('palInput').value = '';
+  renderPalette();
+  document.getElementById('paletteBackdrop').classList.add('visible');
+  setTimeout(() => document.getElementById('palInput').focus(), 50);
+}
+
+function closePalette() {
+  document.getElementById('paletteBackdrop').classList.remove('visible');
+}
+
+document.getElementById('palInput').addEventListener('input', () => {
+  palSel = 0; renderPalette();
+});
+
+document.getElementById('palInput').addEventListener('keydown', e => {
+  const q  = document.getElementById('palInput').value.toLowerCase();
+  const actions = PAL_ACTIONS.filter(a =>
+    !q || a.label.toLowerCase().includes(q) || a.sub.toLowerCase().includes(q)
+  );
+  if (e.key === 'Escape') { closePalette(); return; }
+  if (e.key === 'ArrowDown') { e.preventDefault(); palSel = Math.min(palSel + 1, actions.length - 1); renderPalette(); }
+  if (e.key === 'ArrowUp')   { e.preventDefault(); palSel = Math.max(palSel - 1, 0); renderPalette(); }
+  if (e.key === 'Enter') { activatePalItem(palSel, actions); }
+});
+
+document.getElementById('paletteBackdrop').addEventListener('click', e => {
+  if (e.target === document.getElementById('paletteBackdrop')) closePalette();
+});
+
+document.getElementById('searchBox').addEventListener('click', openPalette);
+
+/* ════════════════════════════════
+   TOAST
+════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ════════════════════════════════
+   MISC
+════════════════════════════════ */
+function switchMarket(chip) {
+  document.querySelectorAll('.mchip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+}
+
+/* ════════════════════════════════
+   PROFILE POPOVER
+════════════════════════════════ */
+
+const profilePop = document.getElementById('profilePop');
+
+function toggleProfilePop(e) {
+  e.stopPropagation();
+  profilePop.classList.toggle('open');
+}
+
+function closeProfilePop() {
+  profilePop.classList.remove('open');
+}
+
+document.getElementById('profileAvatarBtn').addEventListener('click', toggleProfilePop);
+
+document.getElementById('ppHotkeysBtn').addEventListener('click', () => {
+  closeProfilePop();
+  openShortcuts();
+});
+
+// Close when clicking outside
+document.addEventListener('click', (e) => {
+  if (!profilePop.contains(e.target) && e.target !== document.getElementById('profileAvatarBtn')) {
+    closeProfilePop();
+  }
+});
+
+/* ════════════════════════════════
+   INIT
+════════════════════════════════ */
+renderFkeyStrip();
+renderScTable('trading');
+</script>
+</body>
+</html>
